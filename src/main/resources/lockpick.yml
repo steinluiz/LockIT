@@ -1,0 +1,24 @@
+# pins: Number of pins (max: 9)
+# lives: Number of fails allowed
+
+level_1:
+  pins: 6
+  lives: 5
+
+level_2:
+  pins: 7
+  lives: 5
+
+level_3:
+  pins: 8
+  lives: 5
+
+level_4:
+  pins: 8
+  lives: 4
+
+level_5:
+  pins: 9
+  lives: 4
+
+# by Stein

@@ -1,0 +1,23 @@
+key_forged: "&aKey successfully forged: &7%id%"
+lock_installed: "&aLock installed!"
+item_cleaned: "&eCode removed! The item is now blank."
+only_players: "&cOnly players can use this."
+state_unlocked: "&2UNLOCKED"
+state_locked: "&4LOCKED"
+opened_key_inv: "&eOpened"
+locked_msg: "&cLocked! You need the key."
+lock_removed: "&eLock removed and retrieved."
+lock_dropped: "&eInventory full, lock dropped on the ground."
+must_be_sneaking: "&cSneak and use the key to remove the lock."
+locked_break_attempt: "&cThis block is locked. Remove the lock before breaking."
+lock_unpickable: "&5This lock is reinforced. It cannot be picked!"
+lp_start: "&eStarting Lockpicking... Find the correct order!"
+lp_win: "&a&lSUCCESS! &r&aYou unlocked the block."
+lp_fail: "&c&lFAIL! &r&cYou broke your lockpicks."
+cmd_usage_lock: "&cUse: /locks lock <1-6>"
+no_permission: "&cYou do not have permission to use this command."
+# You can uncomment the next lines if you want to
+# lp_break: "&cWrong pin! Lockpick broke. Remaining lives: %lives%"
+# lp_no_items: "&cYou don't have any lockpicks left!"
+
+# by Stein

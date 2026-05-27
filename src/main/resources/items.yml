@@ -1,0 +1,46 @@
+key:
+  material: NAME_TAG
+  name: "&fKey"
+  custom_model_data: 100
+
+universal_key:
+  material: NAME_TAG
+  name: "&6Universal Key"
+  custom_model_data: 101
+
+lockpick:
+  material: STICK
+  name: "&7Lockpick"
+  custom_model_data: 2633
+
+lock_1:
+  material: FLINT
+  name: "&fWeak Lock"
+  custom_model_data: 100
+
+lock_2:
+  material: FLINT
+  name: "&aNormal Lock"
+  custom_model_data: 101
+
+lock_3:
+  material: FLINT
+  name: "&6Tough Lock"
+  custom_model_data: 102
+
+lock_4:
+  material: FLINT
+  name: "&cStrong Lock"
+  custom_model_data: 103
+
+lock_5:
+  material: FLINT
+  name: "&bFine Lock"
+  custom_model_data: 104
+
+lock_6:
+  material: FLINT
+  name: "&5&l&k||&r &5&lUnpickable Lock &k||"
+  custom_model_data: 105
+
+# by Stein

@@ -1,0 +1,13 @@
+name: LockIT
+version: 1.2
+main: com.stein.lockit.LockIT
+api-version: 1.21
+author: Stein
+commands:
+  lockit:
+    description: Main command for LockIT
+    usage: /lockit <args>
+permissions:
+  lockit.admin:
+    description: Allows you to use the /lockit command
+    default: op

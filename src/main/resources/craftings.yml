@@ -1,0 +1,107 @@
+
+# Use space for air :)
+key:
+  enabled: true
+  amount: 1
+  shape:
+    - "III"
+    - " NN"
+    - "   "
+  ingredients:
+    I: IRON_INGOT
+    N: IRON_NUGGET
+
+lockpick:
+  enabled: true
+  amount: 1
+  shape:
+    - "  I"
+    - " S "
+    - "S  "
+  ingredients:
+    I: IRON_INGOT
+    S: STICK
+
+lock_1:
+  enabled: true
+  amount: 1
+  shape:
+    - " C "
+    - "COC"
+    - " C "
+  ingredients:
+    C: COBBLESTONE
+    O: FLINT
+
+lock_2:
+  enabled: true
+  amount: 1
+  shape:
+    - "CIC"
+    - "IOI"
+    - "CIC"
+  ingredients:
+    C: COBBLESTONE
+    I: IRON_INGOT
+    O: FLINT
+
+lock_3:
+  enabled: true
+  amount: 1
+  shape:
+    - "IGI"
+    - "GOG"
+    - "IGI"
+  ingredients:
+    I: IRON_INGOT
+    G: GOLD_INGOT
+    O: FLINT
+
+lock_4:
+  enabled: true
+  amount: 1
+  shape:
+    - "GDG"
+    - "DOD"
+    - "GDG"
+  ingredients:
+    G: GOLD_INGOT
+    D: DIAMOND
+    O: FLINT
+
+lock_5:
+  enabled: true
+  amount: 1
+  shape:
+    - "DED"
+    - "EOE"
+    - "DED"
+  ingredients:
+    D: DIAMOND
+    E: EMERALD
+    O: FLINT
+
+################################
+
+lock_6:
+  enabled: false
+  amount: 1
+  shape:
+    - "NNN"
+    - "NON"
+    - "NNN"
+  ingredients:
+    N: NETHERITE_INGOT
+    O: OBSIDIAN
+
+universal_key:
+  enabled: false
+  amount: 1
+  shape:
+    - "   "
+    - " D "
+    - "   "
+  ingredients:
+    D: DIAMOND
+
+# by Stein
