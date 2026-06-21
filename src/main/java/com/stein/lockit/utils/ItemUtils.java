@@ -14,6 +14,7 @@ import java.util.Collections;
 public class ItemUtils {
     public static final String KEY_ID_TAG = "keyid";
     public static final String LOCK_LEVEL_TAG = "lock_level";
+    public static final String DURABILITY_TAG = "lockpick_durability";
 
     public static NamespacedKey getNsKey(String key) {
         return new NamespacedKey(LockIT.getInstance(), key);
@@ -55,17 +56,36 @@ public class ItemUtils {
     }
 
     public static boolean hasLockpick(Player p) {
+        return findLockpick(p) != null;
+    }
+
+    public static ItemStack findLockpick(Player p) {
         ItemStack ref = getLockpick();
         for (ItemStack i : p.getInventory().getContents()) {
             if (i != null && i.getType() == ref.getType()) {
                 if (i.hasItemMeta() && i.getItemMeta().hasCustomModelData()) {
                     if (i.getItemMeta().getCustomModelData() == ref.getItemMeta().getCustomModelData()) {
-                        return true;
+                        return i;
                     }
                 }
             }
         }
-        return false;
+        return null;
+    }
+
+    public static int getDurability(ItemStack item) {
+        int def = LockIT.getInstance().getLockpickConfig().getDurability();
+        if (item == null || !item.hasItemMeta()) return def;
+        Integer v = item.getItemMeta().getPersistentDataContainer()
+                .get(getNsKey(DURABILITY_TAG), PersistentDataType.INTEGER);
+        return v == null ? def : v;
+    }
+
+    public static void setDurability(ItemStack item, int value) {
+        if (item == null) return;
+        ItemMeta meta = item.getItemMeta();
+        meta.getPersistentDataContainer().set(getNsKey(DURABILITY_TAG), PersistentDataType.INTEGER, value);
+        item.setItemMeta(meta);
     }
 
     public static String getNBT(ItemStack item, String tag) {

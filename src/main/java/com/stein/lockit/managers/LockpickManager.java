@@ -73,18 +73,45 @@ public class LockpickManager {
             }
 
         } else {
-            p.getInventory().removeItem(ItemUtils.getLockpick());
+            boolean lockpickRemoved = damageLockpick(p);
             p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 0.5f);
             session.lives--;
 
+            // Break message only when a lockpick actually breaks.
+            if (lockpickRemoved) {
+                plugin.getMsg().send(p, "lp_break", "%lives%", String.valueOf(session.lives));
+            }
+
+            // Fail message is separate: it fires when the lockpicking attempt is lost.
             if (session.lives <= 0) {
                 p.closeInventory();
                 plugin.getMsg().send(p, "lp_fail");
                 p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
                 sessions.remove(p.getUniqueId());
-            } else {
-                plugin.getMsg().send(p, "lp_break", "%lives%", String.valueOf(session.lives));
             }
+        }
+    }
+
+    // Returns true only when a lockpick item is actually consumed/removed from the player.
+    private boolean damageLockpick(Player p) {
+        if (!plugin.getLockpickConfig().isDurabilityEnabled()) {
+            p.getInventory().removeItem(ItemUtils.getLockpick());
+            return true;
+        }
+
+        ItemStack lp = ItemUtils.findLockpick(p);
+        if (lp == null) return false;
+
+        int dur = ItemUtils.getDurability(lp) - 1;
+        if (dur <= 0) {
+            lp.setAmount(lp.getAmount() - 1);
+            if (lp.getAmount() > 0) {
+                ItemUtils.setDurability(lp, plugin.getLockpickConfig().getDurability());
+            }
+            return true;
+        } else {
+            ItemUtils.setDurability(lp, dur);
+            return false;
         }
     }
 

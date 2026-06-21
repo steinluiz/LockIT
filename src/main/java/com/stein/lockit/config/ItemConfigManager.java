@@ -2,7 +2,6 @@ package com.stein.lockit.config;
 
 import com.stein.lockit.LockIT;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor; // Adicionado import que faltava
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -11,8 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ItemConfigManager {
     private final LockIT plugin;
@@ -32,6 +29,7 @@ public class ItemConfigManager {
             } catch (IllegalArgumentException e) { }
         }
         config = YamlConfiguration.loadConfiguration(file);
+        com.stein.lockit.utils.ConfigUtils.mergeDefaults(plugin, file, config, "items.yml");
     }
 
     // --- CORREÇÃO: Getter público para acessar a config ---

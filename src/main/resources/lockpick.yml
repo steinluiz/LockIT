@@ -1,6 +1,12 @@
 # pins: Number of pins (max: 9)
 # lives: Number of fails allowed
 
+# durability: If enabled, a lockpick loses 1 durability per failed
+# attempt instead of being consumed immediately. It breaks at 0.
+durability:
+  enabled: true
+  amount: 5
+
 level_1:
   pins: 6
   lives: 5

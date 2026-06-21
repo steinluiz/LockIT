@@ -43,6 +43,10 @@ public class LockCommand implements CommandExecutor, TabCompleter {
                 if (args.length > 1) p.getInventory().addItem(ItemUtils.getKey(args[1]));
                 else plugin.getMsg().send(p, "cmd_usage_key"); break;
             case "lockpick": p.getInventory().addItem(ItemUtils.getLockpick()); break;
+            case "reload":
+                plugin.reloadConfigs();
+                plugin.getMsg().send(p, "reload_success");
+                break;
             case "lock":
                 if (args.length > 1) {
                     try {
@@ -68,6 +72,7 @@ public class LockCommand implements CommandExecutor, TabCompleter {
             list.add("customkey");
             list.add("lock");
             list.add("lockpick");
+            list.add("reload");
         }
         else if (args.length == 2 && args[0].equalsIgnoreCase("lock")) {
             for(int i=1; i<=6; i++) list.add(String.valueOf(i));

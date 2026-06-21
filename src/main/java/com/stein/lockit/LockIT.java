@@ -64,4 +64,12 @@ public final class LockIT extends JavaPlugin {
     public ItemConfigManager getItemConfig() { return itemConfigManager; }
     public LockpickConfigManager getLockpickConfig() { return lockpickConfigManager; }
     public LockpickManager getLockpickManager() { return lockpickManager; }
+    public CraftingManager getCraftingManager() { return craftingManager; }
+
+    public void reloadConfigs() {
+        messageManager.load();
+        itemConfigManager.load();
+        lockpickConfigManager.load();
+        craftingManager.load();
+    }
 }

@@ -31,6 +31,7 @@ public class CraftingManager {
             } catch (IllegalArgumentException e) { }
         }
         config = YamlConfiguration.loadConfiguration(file);
+        com.stein.lockit.utils.ConfigUtils.mergeDefaults(plugin, file, config, "craftings.yml");
         registerRecipes();
     }
 

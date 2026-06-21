@@ -24,6 +24,7 @@ public class LockpickConfigManager {
             } catch (IllegalArgumentException e) { }
         }
         config = YamlConfiguration.loadConfiguration(file);
+        com.stein.lockit.utils.ConfigUtils.mergeDefaults(plugin, file, config, "lockpick.yml");
     }
 
     public int getPins(int level) {
@@ -37,5 +38,15 @@ public class LockpickConfigManager {
     public int getLives(int level) {
         if (config == null) return 3;
         return config.getInt("level_" + level + ".lives", 3);
+    }
+
+    public boolean isDurabilityEnabled() {
+        if (config == null) return false;
+        return config.getBoolean("durability.enabled", false);
+    }
+
+    public int getDurability() {
+        if (config == null) return 5;
+        return config.getInt("durability.amount", 5);
     }
 }

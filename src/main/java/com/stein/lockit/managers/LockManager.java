@@ -59,6 +59,8 @@ public class LockManager {
 
     public LockInfo getLock(Location loc) { return locks.get(loc); }
 
+    public Map<Location, LockInfo> getLocks() { return locks; }
+
     public void setLock(Location loc, ItemStack item) {
         if (item == null) {
             locks.remove(loc);

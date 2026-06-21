@@ -6,7 +6,7 @@ author: Stein
 commands:
   lockit:
     description: Main command for LockIT
-    usage: /lockit <args>
+    usage: /lockit <universalkey|key|customkey <id>|lock <1-6>|lockpick|reload>
 permissions:
   lockit.admin:
     description: Allows you to use the /lockit command

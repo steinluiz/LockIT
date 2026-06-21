@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Bisected;
+import org.bukkit.block.data.Openable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,6 +37,16 @@ public class InteractionListener implements Listener {
 
     public InteractionListener(LockIT plugin) {
         this.plugin = plugin;
+    }
+
+    private void closeIfOpen(Block b) {
+        if (b.getBlockData() instanceof Openable) {
+            Openable openable = (Openable) b.getBlockData();
+            if (openable.isOpen()) {
+                openable.setOpen(false);
+                b.setBlockData(openable);
+            }
+        }
     }
 
     private Location getRealBlockLocation(Block b) {
@@ -75,7 +86,7 @@ public class InteractionListener implements Listener {
                     return;
                 } else {
                     e.setCancelled(true);
-                    p.sendMessage(Component.text("You must combine this lock with a forged key in your inventory first!").color(NamedTextColor.RED));
+                    plugin.getMsg().send(p, "lock_needs_key");
                     p.playSound(loc, Sound.BLOCK_LEVER_CLICK, 1, 0.5f);
                     return;
                 }
@@ -178,14 +189,7 @@ public class InteractionListener implements Listener {
 
 
                             if (info != null && info.isLocked) {
-
-                                if (b.getBlockData() instanceof org.bukkit.block.data.Openable) {
-                                    org.bukkit.block.data.Openable openable = (org.bukkit.block.data.Openable) b.getBlockData();
-                                    if (openable.isOpen()) {
-                                        openable.setOpen(false);
-                                        b.setBlockData(openable);
-                                    }
-                                }
+                                closeIfOpen(b);
                             }
                         }
                     }
