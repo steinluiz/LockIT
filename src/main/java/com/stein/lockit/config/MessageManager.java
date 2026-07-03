@@ -53,7 +53,7 @@ public class MessageManager {
         String msg = getRaw(key);
         if (msg == null) return;
         if (useActionBar() && sender instanceof Player) {
-            ((Player) sender).sendActionBar(Component.text(ChatColor.translateAlternateColorCodes('&', msg)));
+            ((Player) sender).sendActionBar(Component.text(ChatColor.translateAlternateColorCodes('&', PREFIX + msg)));
         } else {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + msg));
         }
@@ -63,7 +63,7 @@ public class MessageManager {
         String msg = getRaw(key);
         if (msg == null) return;
         if (useActionBar() && sender instanceof Player) {
-            String finalMsg = msg.replace(placeholder, replacement);
+            String finalMsg = (PREFIX + msg).replace(placeholder, replacement);
             ((Player) sender).sendActionBar(Component.text(ChatColor.translateAlternateColorCodes('&', finalMsg)));
         } else {
             String finalMsg = (PREFIX + msg).replace(placeholder, replacement);
@@ -71,7 +71,20 @@ public class MessageManager {
         }
     }
 
+    public String getGuiTitle() {
+        String title = getRaw("lock_gui_title");
+        if (title == null) title = "Install Lock";
+        return ChatColor.translateAlternateColorCodes('&', title);
+    }
+
     public void sendActionBar(Player p, String key) {
+        String msg = getRaw(key);
+        if (msg != null) {
+            p.sendActionBar(Component.text(ChatColor.translateAlternateColorCodes('&', PREFIX + msg)));
+        }
+    }
+
+    public void sendActionBarNoPrefix(Player p, String key) {
         String msg = getRaw(key);
         if (msg != null) {
             p.sendActionBar(Component.text(ChatColor.translateAlternateColorCodes('&', msg)));

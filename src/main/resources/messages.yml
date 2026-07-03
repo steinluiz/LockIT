@@ -22,5 +22,7 @@ cmd_usage_key: "&cUse: /lockit customkey <id>"
 level_error: "&cLock level must be between 1 and 6."
 no_permission: "&cYou do not have permission to use this command."
 reload_success: "&aAll configs reloaded successfully."
+no_creative_transfer: "&cYou can't transfer a code to a lock in creative mode."
+lock_gui_title: "&8Install Lock"
 
 # by Stein

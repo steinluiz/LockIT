@@ -54,6 +54,14 @@ public class InteractionListener implements Listener {
             Bisected data = (Bisected) b.getBlockData();
             if (data.getHalf() == Bisected.Half.TOP) return b.getRelative(0, -1, 0).getLocation();
         }
+        // Double chest: both halves resolve to the left side so they share one lock.
+        if (b.getState() instanceof org.bukkit.block.Chest) {
+            org.bukkit.inventory.InventoryHolder holder = ((org.bukkit.block.Chest) b.getState()).getInventory().getHolder();
+            if (holder instanceof org.bukkit.block.DoubleChest) {
+                org.bukkit.block.DoubleChest dc = (org.bukkit.block.DoubleChest) holder;
+                return ((org.bukkit.block.Chest) dc.getLeftSide()).getBlock().getLocation();
+            }
+        }
         return b.getLocation();
     }
 
@@ -85,23 +93,11 @@ public class InteractionListener implements Listener {
             Location loc = getRealBlockLocation(block);
             LockInfo info = LockIT.getInstance().getLockManager().getLock(loc);
 
-            if (p.isSneaking() && info == null && isLockItem(hand)) {
-                String keyId = ItemUtils.getNBT(hand, ItemUtils.KEY_ID_TAG);
-
-                if (keyId != null && !keyId.equals("blank")) {
-                    e.setCancelled(true);
-                    ItemStack lockToInstall = hand.asOne();
-                    LockIT.getInstance().getLockManager().setLock(loc, lockToInstall);
-                    hand.subtract(1);
-                    plugin.getMsg().send(p, "lock_installed");
-                    p.playSound(loc, Sound.BLOCK_ANVIL_USE, 1, 1);
-                    return;
-                } else {
-                    e.setCancelled(true);
-                    plugin.getMsg().send(p, "lock_needs_key");
-                    p.playSound(loc, Sound.BLOCK_LEVER_CLICK, 1, 0.5f);
-                    return;
-                }
+            boolean bareHands = hand == null || hand.getType().isAir();
+            if (p.isSneaking() && info == null && (isLockItem(hand) || isKeyItem(hand) || bareHands)) {
+                e.setCancelled(true);
+                LockIT.getInstance().getLockGuiManager().open(p, loc);
+                return;
             }
 
             if (info != null) {
@@ -109,20 +105,28 @@ public class InteractionListener implements Listener {
                 boolean playerHasKey = hasKey(p, lockId);
                 boolean holdingKey = (playerHasKey && checkKeyItem(hand, lockId)) || isUniversalKey(hand);
 
+                // Sneak + right key → open the lock management menu.
+                if (p.isSneaking() && holdingKey) {
+                    e.setCancelled(true);
+                    LockIT.getInstance().getLockGuiManager().open(p, loc);
+                    return;
+                }
+
+                // Right-click + right key → toggle locked/unlocked state.
                 if (holdingKey) {
                     e.setCancelled(true);
                     boolean newState = !info.isLocked;
                     LockIT.getInstance().getLockManager().setLockState(loc, newState);
                     String msg = newState ? "state_locked" : "state_unlocked";
                     Sound sound = newState ? Sound.BLOCK_IRON_DOOR_CLOSE : Sound.BLOCK_IRON_DOOR_OPEN;
-                    plugin.getMsg().sendActionBar(p, msg);
+                    plugin.getMsg().sendActionBarNoPrefix(p, msg);
                     p.playSound(loc, sound, 0.5f, newState ? 0.5f : 2);
                     return;
                 }
 
                 if (info.isLocked) {
                     if (playerHasKey) {
-                        plugin.getMsg().sendActionBar(p, "opened_key_inv");
+                        plugin.getMsg().sendActionBarNoPrefix(p, "opened_key_inv");
                     } else {
                         e.setCancelled(true);
                         if (isLockpick(hand)) {
@@ -216,7 +220,7 @@ public class InteractionListener implements Listener {
         }, 1L);
     }
 
-    // =====================================================================
+    
 
     @EventHandler
     public void onEntityInteract(EntityInteractEvent e) {
@@ -324,23 +328,9 @@ public class InteractionListener implements Listener {
             LockInfo info = LockIT.getInstance().getLockManager().getLock(loc);
             Player p = e.getPlayer();
             if (info != null) {
-                String lockId = ItemUtils.getNBT(info.lockItem, ItemUtils.KEY_ID_TAG);
-                ItemStack hand = p.getInventory().getItemInMainHand();
-
-                boolean isAuthorized = checkKeyItem(hand, lockId) || isUniversalKey(hand);
-
-                if (p.isSneaking() && isAuthorized) {
-                    e.setCancelled(true);
-                    LockIT.getInstance().getLockManager().setLock(loc, null);
-                    java.util.HashMap<Integer, ItemStack> leftOver = p.getInventory().addItem(info.lockItem);
-                    if (!leftOver.isEmpty()) p.getWorld().dropItemNaturally(p.getLocation(), info.lockItem);
-                    plugin.getMsg().send(p, "lock_removed");
-                    p.playSound(loc, Sound.ENTITY_ITEM_BREAK, 1, 1);
-                    return;
-                }
+                // Left-click no longer removes the lock; just protect it from being interacted with in survival.
                 if (p.getGameMode() != GameMode.CREATIVE) {
                     e.setCancelled(true);
-                    plugin.getMsg().send(p, "must_be_sneaking");
                 }
             }
         }
@@ -363,6 +353,12 @@ public class InteractionListener implements Listener {
     private boolean isLockItem(ItemStack item) {
         if (item == null || item.getType().isAir() || !item.hasItemMeta()) return false;
         return item.getItemMeta().getPersistentDataContainer().has(ItemUtils.getNsKey(ItemUtils.LOCK_LEVEL_TAG), PersistentDataType.INTEGER);
+    }
+
+    private boolean isKeyItem(ItemStack item) {
+        if (item == null || item.getType().isAir()) return false;
+        String keyMat = LockIT.getInstance().getItemConfig().getConfig().getString("key.material", "NAME_TAG");
+        return item.getType().name().equals(keyMat);
     }
 
     private boolean isLockpick(ItemStack item) {

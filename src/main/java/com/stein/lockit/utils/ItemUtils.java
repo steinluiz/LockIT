@@ -88,6 +88,11 @@ public class ItemUtils {
         item.setItemMeta(meta);
     }
 
+    public static boolean isLock(ItemStack item) {
+        if (item == null || item.getType().isAir() || !item.hasItemMeta()) return false;
+        return item.getItemMeta().getPersistentDataContainer().has(getNsKey(LOCK_LEVEL_TAG), PersistentDataType.INTEGER);
+    }
+
     public static String getNBT(ItemStack item, String tag) {
         if (item == null || !item.hasItemMeta()) return null;
         return item.getItemMeta().getPersistentDataContainer().get(getNsKey(tag), PersistentDataType.STRING);

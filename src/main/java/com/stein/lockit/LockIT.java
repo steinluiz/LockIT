@@ -22,6 +22,7 @@ public final class LockIT extends JavaPlugin {
     private LockpickConfigManager lockpickConfigManager;
     private LockpickManager lockpickManager;
     private CraftingManager craftingManager;
+    private com.stein.lockit.managers.LockGuiManager lockGuiManager;
 
     @Override
     public void onEnable() {
@@ -39,6 +40,7 @@ public final class LockIT extends JavaPlugin {
         this.lockManager = new LockManager(this);
         this.lockpickManager = new LockpickManager(this);
         this.craftingManager = new CraftingManager(this);
+        this.lockGuiManager = new com.stein.lockit.managers.LockGuiManager(this);
 
         PluginCommand cmd = getCommand("lockit");
         if (cmd != null) {
@@ -67,16 +69,13 @@ public final class LockIT extends JavaPlugin {
     public LockpickConfigManager getLockpickConfig() { return lockpickConfigManager; }
     public LockpickManager getLockpickManager() { return lockpickManager; }
     public CraftingManager getCraftingManager() { return craftingManager; }
+    public com.stein.lockit.managers.LockGuiManager getLockGuiManager() { return lockGuiManager; }
 
-    /**
-     * Recreates config.yml if the user deleted it, and re-adds any keys that are
-     * present in the bundled default but missing from the user's file on disk.
-     */
     private void setupMainConfig() {
-        saveDefaultConfig();      // recreate whole file if it was deleted
-        reloadConfig();           // read current file + load jar defaults
+        saveDefaultConfig();      
+        reloadConfig();           
         getConfig().options().copyDefaults(true);
-        saveConfig();             // write back any missing keys
+        saveConfig();             
     }
 
     public void reloadConfigs() {

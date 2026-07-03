@@ -14,11 +14,11 @@ public final class ConfigUtils {
 
     private ConfigUtils() {}
 
-    /**
-     * Merges any keys present in the bundled resource but missing from the user's file
-     * back into the file on disk. Lets old servers gain new config keys without losing
-     * their existing customizations.
-     */
+    
+
+
+
+
     public static void mergeDefaults(LockIT plugin, File file, FileConfiguration config, String resourceName) {
         InputStream defStream = plugin.getResource(resourceName);
         if (defStream == null) return;

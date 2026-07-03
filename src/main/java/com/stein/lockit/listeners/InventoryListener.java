@@ -30,6 +30,11 @@ public class InventoryListener implements Listener {
         ItemStack current = e.getCurrentItem();
         ItemStack cursor = e.getCursor();
 
+        if (e.getView().getTopInventory().getHolder() instanceof com.stein.lockit.managers.LockGuiHolder) {
+            LockIT.getInstance().getLockGuiManager().handleClick(e);
+            return;
+        }
+
         if (e.getView().getTitle().startsWith("Lockpicking")) {
             e.setCancelled(true);
             LockIT.getInstance().getLockpickManager().handleClick(p, e.getSlot(), e.getInventory());
@@ -49,6 +54,11 @@ public class InventoryListener implements Listener {
 
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
+        if (e.getInventory().getHolder() instanceof com.stein.lockit.managers.LockGuiHolder) {
+            LockIT.getInstance().getLockGuiManager().handleClose(e);
+            return;
+        }
+
         if (e.getView().getTitle().startsWith("Lockpicking")) {
             LockIT.getInstance().getLockpickManager().quit((Player) e.getPlayer());
         }
@@ -85,10 +95,6 @@ public class InventoryListener implements Listener {
     }
 
     private boolean handleKeyToLockTransfer(Player p, ItemStack clickedItem, ItemStack cursorItem) {
-        if (p.getGameMode() != GameMode.SURVIVAL && p.getGameMode() != GameMode.ADVENTURE) {
-            return false;
-        }
-
         if (clickedItem == null || clickedItem.getType().isAir() || !clickedItem.hasItemMeta()) {
             return false;
         }
@@ -106,6 +112,12 @@ public class InventoryListener implements Listener {
         if (cursorItem.getType().name().equals(keyMat)) {
             String keyId = ItemUtils.getNBT(cursorItem, ItemUtils.KEY_ID_TAG);
             if (keyId == null || keyId.equals("blank")) return false;
+
+            // Valid transfer attempt, but not allowed in creative.
+            if (p.getGameMode() != GameMode.SURVIVAL && p.getGameMode() != GameMode.ADVENTURE) {
+                plugin.getMsg().send(p, "no_creative_transfer");
+                return true;
+            }
 
             ItemMeta lockMeta = clickedItem.getItemMeta();
             lockMeta.getPersistentDataContainer().set(ItemUtils.getNsKey(ItemUtils.KEY_ID_TAG), PersistentDataType.STRING, keyId);

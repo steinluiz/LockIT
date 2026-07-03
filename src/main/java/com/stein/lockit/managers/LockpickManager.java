@@ -77,12 +77,12 @@ public class LockpickManager {
             p.playSound(p.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 0.5f);
             session.lives--;
 
-            // Break message only when a lockpick actually breaks.
+            
             if (lockpickRemoved) {
                 plugin.getMsg().send(p, "lp_break", "%lives%", String.valueOf(session.lives));
             }
 
-            // Fail message is separate: it fires when the lockpicking attempt is lost.
+            
             if (session.lives <= 0) {
                 p.closeInventory();
                 plugin.getMsg().send(p, "lp_fail");
@@ -92,7 +92,7 @@ public class LockpickManager {
         }
     }
 
-    // Returns true only when a lockpick item is actually consumed/removed from the player.
+    
     private boolean damageLockpick(Player p) {
         if (!plugin.getLockpickConfig().isDurabilityEnabled()) {
             p.getInventory().removeItem(ItemUtils.getLockpick());

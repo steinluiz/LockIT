@@ -32,11 +32,11 @@ public class ItemConfigManager {
         com.stein.lockit.utils.ConfigUtils.mergeDefaults(plugin, file, config, "items.yml");
     }
 
-    // --- CORREÇÃO: Getter público para acessar a config ---
+    
     public FileConfiguration getConfig() {
         return config;
     }
-    // -----------------------------------------------------
+    
 
     public ItemStack getItemFromConfig(String key) {
         String matName = config.getString(key + ".material", "STONE");
