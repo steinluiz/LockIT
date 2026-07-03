@@ -57,6 +57,18 @@ public class InteractionListener implements Listener {
         return b.getLocation();
     }
 
+    private Block getDoubleChestPartner(Block b) {
+        if (!(b.getState() instanceof org.bukkit.block.Chest)) return null;
+        org.bukkit.inventory.InventoryHolder holder = ((org.bukkit.block.Chest) b.getState()).getInventory().getHolder();
+        if (holder instanceof org.bukkit.block.DoubleChest) {
+            org.bukkit.block.DoubleChest dc = (org.bukkit.block.DoubleChest) holder;
+            Block left = ((org.bukkit.block.Chest) dc.getLeftSide()).getBlock();
+            Block right = ((org.bukkit.block.Chest) dc.getRightSide()).getBlock();
+            return b.equals(left) ? right : left;
+        }
+        return null;
+    }
+
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
@@ -164,6 +176,12 @@ public class InteractionListener implements Listener {
         if (isLockableBlock(block.getType())) {
             LockInfo info = LockIT.getInstance().getLockManager().getLock(getRealBlockLocation(block));
             if (info != null) return true;
+
+            Block partner = getDoubleChestPartner(block);
+            if (partner != null) {
+                LockInfo partnerInfo = LockIT.getInstance().getLockManager().getLock(getRealBlockLocation(partner));
+                if (partnerInfo != null) return true;
+            }
         }
 
         Block blockAbove = block.getRelative(org.bukkit.block.BlockFace.UP);
