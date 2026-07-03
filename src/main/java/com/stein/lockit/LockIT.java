@@ -31,6 +31,8 @@ public final class LockIT extends JavaPlugin {
             getDataFolder().mkdirs();
         }
 
+        setupMainConfig();
+
         this.messageManager = new MessageManager(this);
         this.itemConfigManager = new ItemConfigManager(this);
         this.lockpickConfigManager = new LockpickConfigManager(this);
@@ -66,7 +68,19 @@ public final class LockIT extends JavaPlugin {
     public LockpickManager getLockpickManager() { return lockpickManager; }
     public CraftingManager getCraftingManager() { return craftingManager; }
 
+    /**
+     * Recreates config.yml if the user deleted it, and re-adds any keys that are
+     * present in the bundled default but missing from the user's file on disk.
+     */
+    private void setupMainConfig() {
+        saveDefaultConfig();      // recreate whole file if it was deleted
+        reloadConfig();           // read current file + load jar defaults
+        getConfig().options().copyDefaults(true);
+        saveConfig();             // write back any missing keys
+    }
+
     public void reloadConfigs() {
+        setupMainConfig();
         messageManager.load();
         itemConfigManager.load();
         lockpickConfigManager.load();

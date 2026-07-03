@@ -1,0 +1,7 @@
+# LockIT configuration
+
+# Send plugin messages in the player's action bar instead of chat.
+# Console output always stays in chat. Action bar messages omit the prefix.
+action-bar: false
+
+# by Stein

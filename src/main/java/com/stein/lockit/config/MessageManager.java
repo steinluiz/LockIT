@@ -45,16 +45,27 @@ public class MessageManager {
         return getRaw(key) != null;
     }
 
+    private boolean useActionBar() {
+        return plugin.getConfig().getBoolean("action-bar", false);
+    }
+
     public void send(CommandSender sender, String key) {
         String msg = getRaw(key);
-        if (msg != null) {
+        if (msg == null) return;
+        if (useActionBar() && sender instanceof Player) {
+            ((Player) sender).sendActionBar(Component.text(ChatColor.translateAlternateColorCodes('&', msg)));
+        } else {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', PREFIX + msg));
         }
     }
 
     public void send(CommandSender sender, String key, String placeholder, String replacement) {
         String msg = getRaw(key);
-        if (msg != null) {
+        if (msg == null) return;
+        if (useActionBar() && sender instanceof Player) {
+            String finalMsg = msg.replace(placeholder, replacement);
+            ((Player) sender).sendActionBar(Component.text(ChatColor.translateAlternateColorCodes('&', finalMsg)));
+        } else {
             String finalMsg = (PREFIX + msg).replace(placeholder, replacement);
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', finalMsg));
         }
