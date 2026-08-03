@@ -1,0 +1,16 @@
+## 🔒 Menu Overhaul & Double Chest Locks
+
+### ✨ Changes & Improvements
+- **Reworked lock menu access** — Sneak + right-click a container while holding a **key**, **lock**, or **empty hand** to open the lock menu.
+- **Manage locks from the menu** — Sneak + right-click an installed lock with the matching key to open it. Remove a lock simply by taking it out of the menu.
+- **Key toggling** — Right-click a locked block with the correct key to instantly switch between **Locked** and **Unlocked**.
+- **Double chest support** — Both halves of a double chest now share the same lock, just like the two halves of a door.
+- **Double door locks** — New `double-door-single-lock` option in `config.yml`. When enabled (default), a real double door (matching facing, hinges on the outer sides) is secured by one lock: either wing opens the same menu and shows the same lock. Disable it to require a lock on each wing.
+
+### 🛠️ Fixes & Tweaks
+- Left-clicking a lock no longer removes it (removal is now handled through the menu).
+- Trying to transfer a key code onto a lock in **Creative mode** now shows a clear message instead of silently failing.
+- The plugin prefix now displays correctly on action bar messages.
+- **Locked**, **Unlocked**, and **Opened** status messages stay clean (no prefix) for a tidier look.
+
+Thanks for using LockIT! — Stein

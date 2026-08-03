@@ -2,6 +2,7 @@ package com.stein.lockit.listeners;
 
 import com.stein.lockit.LockIT;
 import com.stein.lockit.data.LockInfo;
+import com.stein.lockit.utils.BlockUtils;
 import com.stein.lockit.utils.ItemUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -10,7 +11,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.Openable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -50,19 +50,7 @@ public class InteractionListener implements Listener {
     }
 
     private Location getRealBlockLocation(Block b) {
-        if (b.getBlockData() instanceof Bisected) {
-            Bisected data = (Bisected) b.getBlockData();
-            if (data.getHalf() == Bisected.Half.TOP) return b.getRelative(0, -1, 0).getLocation();
-        }
-        // Double chest: both halves resolve to the left side so they share one lock.
-        if (b.getState() instanceof org.bukkit.block.Chest) {
-            org.bukkit.inventory.InventoryHolder holder = ((org.bukkit.block.Chest) b.getState()).getInventory().getHolder();
-            if (holder instanceof org.bukkit.block.DoubleChest) {
-                org.bukkit.block.DoubleChest dc = (org.bukkit.block.DoubleChest) holder;
-                return ((org.bukkit.block.Chest) dc.getLeftSide()).getBlock().getLocation();
-            }
-        }
-        return b.getLocation();
+        return BlockUtils.getLockLocation(b);
     }
 
     private Block getDoubleChestPartner(Block b) {

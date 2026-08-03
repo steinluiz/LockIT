@@ -4,4 +4,11 @@
 # Console output always stays in chat. Action bar messages omit the prefix.
 action-bar: false
 
+# Double doors (two doors side by side, same facing, hinges on the outer sides).
+# true  = one lock secures both wings. Either wing opens the same lock menu and
+#         shows the same lock, and both are protected by it.
+# false = each wing needs its own lock.
+# Single doors and trapdoors are never affected.
+double-door-single-lock: true
+
 # by Stein
