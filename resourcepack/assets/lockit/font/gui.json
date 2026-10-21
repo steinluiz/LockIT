@@ -1,0 +1,28 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        "": -8
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "lockit:font/lock_gui.png",
+      "height": 256,
+      "ascent": 18,
+      "chars": [
+        ""
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "lockit:font/lockpick_gui.png",
+      "height": 256,
+      "ascent": 20,
+      "chars": [
+        ""
+      ]
+    }
+  ]
+}

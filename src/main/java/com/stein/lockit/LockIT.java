@@ -5,10 +5,12 @@ import com.stein.lockit.config.CraftingManager;
 import com.stein.lockit.config.ItemConfigManager;
 import com.stein.lockit.config.LockpickConfigManager;
 import com.stein.lockit.config.MessageManager;
+import com.stein.lockit.listeners.AnvilListener;
 import com.stein.lockit.listeners.InteractionListener;
 import com.stein.lockit.listeners.InventoryListener;
 import com.stein.lockit.managers.LockManager;
 import com.stein.lockit.managers.LockpickManager;
+import com.stein.lockit.managers.ResourcePackManager;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,6 +25,7 @@ public final class LockIT extends JavaPlugin {
     private LockpickManager lockpickManager;
     private CraftingManager craftingManager;
     private com.stein.lockit.managers.LockGuiManager lockGuiManager;
+    private ResourcePackManager resourcePackManager;
 
     @Override
     public void onEnable() {
@@ -41,6 +44,7 @@ public final class LockIT extends JavaPlugin {
         this.lockpickManager = new LockpickManager(this);
         this.craftingManager = new CraftingManager(this);
         this.lockGuiManager = new com.stein.lockit.managers.LockGuiManager(this);
+        this.resourcePackManager = new ResourcePackManager(this);
 
         PluginCommand cmd = getCommand("lockit");
         if (cmd != null) {
@@ -49,6 +53,8 @@ public final class LockIT extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new InteractionListener(this), this);
         getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
+        getServer().getPluginManager().registerEvents(new AnvilListener(this), this);
+        getServer().getPluginManager().registerEvents(resourcePackManager, this);
 
         getLogger().info("LockIT loaded successfully!");
 
@@ -70,6 +76,7 @@ public final class LockIT extends JavaPlugin {
     public LockpickManager getLockpickManager() { return lockpickManager; }
     public CraftingManager getCraftingManager() { return craftingManager; }
     public com.stein.lockit.managers.LockGuiManager getLockGuiManager() { return lockGuiManager; }
+    public ResourcePackManager getResourcePackManager() { return resourcePackManager; }
 
     private void setupMainConfig() {
         saveDefaultConfig();      

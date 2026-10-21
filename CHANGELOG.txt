@@ -1,16 +1,24 @@
-## 🔒 Menu Overhaul & Double Chest Locks
+## 🔑 Master Keys
 
 ### ✨ Changes & Improvements
-- **Reworked lock menu access** — Sneak + right-click a container while holding a **key**, **lock**, or **empty hand** to open the lock menu.
-- **Manage locks from the menu** — Sneak + right-click an installed lock with the matching key to open it. Remove a lock simply by taking it out of the menu.
-- **Key toggling** — Right-click a locked block with the correct key to instantly switch between **Locked** and **Unlocked**.
-- **Double chest support** — Both halves of a double chest now share the same lock, just like the two halves of a door.
-- **Double door locks** — New `double-door-single-lock` option in `config.yml`. When enabled (default), a real double door (matching facing, hinges on the outer sides) is secured by one lock: either wing opens the same menu and shows the same lock. Disable it to require a lock on each wing.
+- **Master keys** — Combine keys in an **anvil** to make one key that opens several locks. Put a key in the **first slot** and the key to merge in the **second slot**: the result is the first key holding the codes of **both**. The second key is consumed. Repeat to add as many codes as you like.
+- **Master key look** — Merged keys are named **Master Key** and use their own `custom_model_data` (`102` by default), so resource packs can give them a unique texture. Both are set in the new `master_key` section of `items.yml`.
+- **Rename while merging** — Type a name in the anvil (e.g. "Master Key") and it is applied to the result.
+- **All codes shown** — Every code a key holds is listed on its own line in the key's tooltip.
+- **Copy master keys** — Transferring a master key onto a blank key duplicates all of its codes.
+- **New lock menu** — The lock menu is now a **hopper** menu. The lock goes in the **middle slot**; the other slots stay empty and can't hold items.
+- **Resource pack** — New textures for locks, keys, lockpicks and both menus, for Minecraft **1.21 to 26.3**. The pack is sent automatically when players join. Configure it in the new `resource-pack` section of `config.yml` (`enabled`, `url`, `sha1`, `id`, `prompt`, `required`); set `enabled: false` to play without textures. Players who don't load the pack still get the plain menus.
+- **Named pins** — The pins in the lockpicking menu are now called **Pin** (change it with `lp_pin_name` in `messages.yml`).
+- **New `master-key` section in `config.yml`:**
+  - `enabled` — Turn anvil merging on or off (default `true`).
+  - `xp-cost` — XP levels charged per merge (default `5`, minimum `1`). Costs above 40 are allowed.
+  - `max-codes` — Maximum codes a single key can hold (`0` = no limit).
 
 ### 🛠️ Fixes & Tweaks
-- Left-clicking a lock no longer removes it (removal is now handled through the menu).
-- Trying to transfer a key code onto a lock in **Creative mode** now shows a clear message instead of silently failing.
-- The plugin prefix now displays correctly on action bar messages.
-- **Locked**, **Unlocked**, and **Opened** status messages stay clean (no prefix) for a tidier look.
+- A master key can't program a lock (a lock holds a single code); trying it now shows a clear message. Use a single-code key instead.
+- The anvil only accepts **one** key in the first slot, so stacked keys are never lost.
+- Merging two keys that add no new code shows no result, so no XP is wasted.
+- Item names from `items.yml` no longer show raw color codes (e.g. `&fKey` / `fKey` when renaming in an anvil). Items made by older versions keep their old name until re-crafted.
+- Existing keys and locks keep working, so nothing needs migrating.
 
 Thanks for using LockIT! — Stein

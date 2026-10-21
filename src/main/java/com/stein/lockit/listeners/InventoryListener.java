@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -35,7 +36,7 @@ public class InventoryListener implements Listener {
             return;
         }
 
-        if (e.getView().getTitle().startsWith("Lockpicking")) {
+        if (e.getView().getTopInventory().getHolder() instanceof com.stein.lockit.managers.LockpickGuiHolder) {
             e.setCancelled(true);
             LockIT.getInstance().getLockpickManager().handleClick(p, e.getSlot(), e.getInventory());
             return;
@@ -53,13 +54,20 @@ public class InventoryListener implements Listener {
     }
 
     @EventHandler
+    public void onDrag(InventoryDragEvent e) {
+        if (e.getView().getTopInventory().getHolder() instanceof com.stein.lockit.managers.LockGuiHolder) {
+            LockIT.getInstance().getLockGuiManager().handleDrag(e);
+        }
+    }
+
+    @EventHandler
     public void onClose(InventoryCloseEvent e) {
         if (e.getInventory().getHolder() instanceof com.stein.lockit.managers.LockGuiHolder) {
             LockIT.getInstance().getLockGuiManager().handleClose(e);
             return;
         }
 
-        if (e.getView().getTitle().startsWith("Lockpicking")) {
+        if (e.getInventory().getHolder() instanceof com.stein.lockit.managers.LockpickGuiHolder) {
             LockIT.getInstance().getLockpickManager().quit((Player) e.getPlayer());
         }
     }
@@ -85,10 +93,7 @@ public class InventoryListener implements Listener {
 
         if (clickedId != null && !clickedId.equals("blank")) return false;
 
-        ItemMeta meta = clickedItem.getItemMeta();
-        meta.getPersistentDataContainer().set(ItemUtils.getNsKey(ItemUtils.KEY_ID_TAG), PersistentDataType.STRING, cursorId);
-        meta.lore(Collections.singletonList(Component.text(cursorId).color(NamedTextColor.GRAY)));
-        clickedItem.setItemMeta(meta);
+        ItemUtils.setKeyCodes(clickedItem, ItemUtils.parseCodes(cursorId));
 
         p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_USE, 1, 1.5f);
         return true;
@@ -112,6 +117,12 @@ public class InventoryListener implements Listener {
         if (cursorItem.getType().name().equals(keyMat)) {
             String keyId = ItemUtils.getNBT(cursorItem, ItemUtils.KEY_ID_TAG);
             if (keyId == null || keyId.equals("blank")) return false;
+
+            // A lock has a single code; a master key can't pick which one to give it.
+            if (ItemUtils.getKeyCodes(cursorItem).size() > 1) {
+                plugin.getMsg().send(p, "master_key_to_lock");
+                return true;
+            }
 
             // Valid transfer attempt, but not allowed in creative.
             if (p.getGameMode() != GameMode.SURVIVAL && p.getGameMode() != GameMode.ADVENTURE) {

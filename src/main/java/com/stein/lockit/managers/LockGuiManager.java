@@ -3,25 +3,23 @@ package com.stein.lockit.managers;
 import com.stein.lockit.LockIT;
 import com.stein.lockit.data.LockInfo;
 import com.stein.lockit.utils.ItemUtils;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 
 public class LockGuiManager {
-    /** Center slot of a 3x3 dispenser inventory. */
-    public static final int LOCK_SLOT = 4;
+    /** Middle slot of the 5-slot hopper inventory. All other slots stay empty. */
+    public static final int LOCK_SLOT = 2;
 
     private final LockIT plugin;
 
@@ -31,15 +29,11 @@ public class LockGuiManager {
 
     public void open(Player p, Location blockLoc) {
         LockGuiHolder holder = new LockGuiHolder(blockLoc);
-        Inventory inv = Bukkit.createInventory(holder, InventoryType.DISPENSER, plugin.getMsg().getGuiTitle());
+        Inventory inv = Bukkit.createInventory(holder, InventoryType.HOPPER,
+                plugin.getResourcePackManager().lockGuiTitle(p, plugin.getMsg().getGuiTitle()));
         holder.setInventory(inv);
 
-        ItemStack filler = createFiller();
-        for (int i = 0; i < inv.getSize(); i++) {
-            if (i != LOCK_SLOT) inv.setItem(i, filler);
-        }
-
-        // If the block already has a lock, show it in the center slot so it can be taken out (removed).
+        // If the block already has a lock, show it in the lock slot so it can be taken out (removed).
         LockInfo info = plugin.getLockManager().getLock(blockLoc);
         if (info != null && info.lockItem != null) {
             inv.setItem(LOCK_SLOT, info.lockItem.clone());
@@ -75,7 +69,7 @@ public class LockGuiManager {
             return;
         }
 
-        // Click inside the player's inventory: allow shift-click of a lock into the center slot only.
+        // Click inside the player's inventory: allow shift-click of a lock into the lock slot only.
         if (e.isShiftClick()) {
             e.setCancelled(true);
             ItemStack clicked = e.getCurrentItem();
@@ -85,6 +79,18 @@ public class LockGuiManager {
                     top.setItem(LOCK_SLOT, clicked.clone());
                     e.setCurrentItem(null);
                 }
+            }
+        }
+    }
+
+    public void handleDrag(InventoryDragEvent e) {
+        int topSize = e.getView().getTopInventory().getSize();
+        for (int raw : e.getRawSlots()) {
+            if (raw >= topSize) continue;
+            // Only a lock may go in the lock slot; every other GUI slot stays empty.
+            if (raw != LOCK_SLOT || !ItemUtils.isLock(e.getOldCursor())) {
+                e.setCancelled(true);
+                return;
             }
         }
     }
@@ -100,7 +106,7 @@ public class LockGuiManager {
 
         LockInfo info = plugin.getLockManager().getLock(loc);
 
-        // Manage mode: the block already has a lock (it was shown in the center slot).
+        // Manage mode: the block already has a lock (it was shown in the lock slot).
         if (info != null) {
             if (inSlot == null || inSlot.getType().isAir()) {
                 // Player took the lock out → remove it from the block. They keep the item they dragged out.
@@ -142,15 +148,5 @@ public class LockGuiManager {
                 p.getWorld().dropItemNaturally(p.getLocation(), l);
             }
         }
-    }
-
-    private ItemStack createFiller() {
-        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        ItemMeta meta = filler.getItemMeta();
-        if (meta != null) {
-            meta.displayName(Component.text(" "));
-            filler.setItemMeta(meta);
-        }
-        return filler;
     }
 }

@@ -3,6 +3,12 @@ key:
   name: "&fKey"
   custom_model_data: 100
 
+# Used for keys holding more than one code (made in the anvil).
+# Give it its own custom_model_data to use a different texture.
+master_key:
+  name: "&eMaster Key"
+  custom_model_data: 102
+
 universal_key:
   material: NAME_TAG
   name: "&6Universal Key"

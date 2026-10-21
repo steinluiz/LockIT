@@ -77,6 +77,12 @@ public class MessageManager {
         return ChatColor.translateAlternateColorCodes('&', title);
     }
 
+    /** Name shown on the pins in the lockpicking menu. */
+    public Component getPinName() {
+        String name = getRaw("lp_pin_name");
+        return com.stein.lockit.config.ItemConfigManager.colorize(name != null ? name : "&7Pin");
+    }
+
     public void sendActionBar(Player p, String key) {
         String msg = getRaw(key);
         if (msg != null) {

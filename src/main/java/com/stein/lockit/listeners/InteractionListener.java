@@ -370,7 +370,6 @@ public class InteractionListener implements Listener {
         if (item == null || item.getType() == Material.AIR) return false;
         String keyMat = LockIT.getInstance().getItemConfig().getConfig().getString("key.material", "NAME_TAG");
         if (!item.getType().name().equals(keyMat)) return false;
-        String keyId = ItemUtils.getNBT(item, ItemUtils.KEY_ID_TAG);
-        return lockId != null && lockId.equals(keyId);
+        return ItemUtils.keyHasCode(item, lockId);
     }
 }

@@ -9,12 +9,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 public class ItemUtils {
     public static final String KEY_ID_TAG = "keyid";
     public static final String LOCK_LEVEL_TAG = "lock_level";
     public static final String DURABILITY_TAG = "lockpick_durability";
+    // A key can hold several codes (master key); they are stored comma-separated in KEY_ID_TAG.
+    public static final String CODE_SEPARATOR = ",";
 
     public static NamespacedKey getNsKey(String key) {
         return new NamespacedKey(LockIT.getInstance(), key);
@@ -31,10 +35,7 @@ public class ItemUtils {
     public static ItemStack getKey(String id) {
         ItemStack item = LockIT.getInstance().getItemConfig().getItemFromConfig("key");
         if (id != null && !id.equals("blank")) {
-            ItemMeta meta = item.getItemMeta();
-            meta.getPersistentDataContainer().set(getNsKey(KEY_ID_TAG), PersistentDataType.STRING, id);
-            meta.lore(Collections.singletonList(Component.text(id).color(NamedTextColor.GRAY)));
-            item.setItemMeta(meta);
+            setKeyCodes(item, parseCodes(id));
         } else {
             ItemMeta meta = item.getItemMeta();
             meta.getPersistentDataContainer().set(getNsKey(KEY_ID_TAG), PersistentDataType.STRING, "blank");
@@ -96,5 +97,40 @@ public class ItemUtils {
     public static String getNBT(ItemStack item, String tag) {
         if (item == null || !item.hasItemMeta()) return null;
         return item.getItemMeta().getPersistentDataContainer().get(getNsKey(tag), PersistentDataType.STRING);
+    }
+
+    public static boolean isKey(ItemStack item) {
+        if (item == null || item.getType().isAir()) return false;
+        String keyMat = LockIT.getInstance().getItemConfig().getConfig().getString("key.material", "NAME_TAG");
+        return item.getType().name().equals(keyMat) && !"true".equals(getNBT(item, "universal"));
+    }
+
+    public static List<String> parseCodes(String raw) {
+        LinkedHashSet<String> codes = new LinkedHashSet<>();
+        if (raw == null) return new ArrayList<>();
+        for (String code : raw.split(CODE_SEPARATOR)) {
+            code = code.trim();
+            if (!code.isEmpty() && !code.equals("blank")) codes.add(code);
+        }
+        return new ArrayList<>(codes);
+    }
+
+    /** All codes on a key; empty for blank keys or non-keys. */
+    public static List<String> getKeyCodes(ItemStack item) {
+        return parseCodes(getNBT(item, KEY_ID_TAG));
+    }
+
+    public static boolean keyHasCode(ItemStack item, String code) {
+        return code != null && getKeyCodes(item).contains(code);
+    }
+
+    /** Writes the codes to the key and lists one code per lore line. */
+    public static void setKeyCodes(ItemStack item, List<String> codes) {
+        ItemMeta meta = item.getItemMeta();
+        meta.getPersistentDataContainer().set(getNsKey(KEY_ID_TAG), PersistentDataType.STRING, String.join(CODE_SEPARATOR, codes));
+        List<Component> lore = new ArrayList<>();
+        for (String code : codes) lore.add(Component.text(code).color(NamedTextColor.GRAY));
+        meta.lore(lore);
+        item.setItemMeta(meta);
     }
 }

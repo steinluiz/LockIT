@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "minecraft:item/name_tag"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 100
+      },
+      "model": "lockit:item/key"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 101
+      },
+      "model": "lockit:item/universal_key"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 102
+      },
+      "model": "lockit:item/master_key"
+    }
+  ]
+}

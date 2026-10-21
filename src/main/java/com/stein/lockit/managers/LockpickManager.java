@@ -9,6 +9,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
@@ -28,9 +29,16 @@ public class LockpickManager {
         GameSession session = new GameSession(blockLoc, pins, lives);
         sessions.put(p.getUniqueId(), session);
 
-        Inventory inv = org.bukkit.Bukkit.createInventory(null, 27, Component.text("Lockpicking (Lvl " + level + ")"));
+        LockpickGuiHolder holder = new LockpickGuiHolder();
+        Component title = plugin.getResourcePackManager().lockpickGuiTitle(p, Component.text("Lockpicking (Lvl " + level + ")"));
+        Inventory inv = org.bukkit.Bukkit.createInventory(holder, 27, title);
+        holder.setInventory(inv);
+        ItemStack pin = new ItemStack(Material.IRON_INGOT);
+        ItemMeta pinMeta = pin.getItemMeta();
+        pinMeta.displayName(plugin.getMsg().getPinName());
+        pin.setItemMeta(pinMeta);
         for (int i = 0; i < pins; i++) {
-            inv.setItem(9 + i, new ItemStack(Material.IRON_INGOT));
+            inv.setItem(9 + i, pin.clone());
         }
 
         p.openInventory(inv);
