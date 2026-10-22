@@ -81,6 +81,43 @@ lock_5:
     E: EMERALD
     O: FLINT
 
+ink_trap:
+  enabled: true
+  amount: 1
+  shape:
+    - " K "
+    - "KHK"
+    - " I "
+  ingredients:
+    K: INK_SAC
+    H: TRIPWIRE_HOOK
+    I: IRON_INGOT
+
+sound_trap:
+  enabled: true
+  amount: 1
+  shape:
+    - " N "
+    - "RHR"
+    - " I "
+  ingredients:
+    N: NOTE_BLOCK
+    R: REDSTONE
+    H: TRIPWIRE_HOOK
+    I: IRON_INGOT
+
+spike_trap:
+  enabled: true
+  amount: 1
+  shape:
+    - "DDD"
+    - " H "
+    - " I "
+  ingredients:
+    D: POINTED_DRIPSTONE
+    H: TRIPWIRE_HOOK
+    I: IRON_INGOT
+
 ################################
 
 lock_6:

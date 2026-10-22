@@ -90,6 +90,13 @@ public class LockpickManager {
                 plugin.getMsg().send(p, "lp_break", "%lives%", String.valueOf(session.lives));
             }
 
+            // A wrong pin sets off the lock's trap, which may throw the robber out.
+            if (plugin.getTrapManager().trigger(p, session.blockLoc)) {
+                sessions.remove(p.getUniqueId());
+                p.closeInventory();
+                return;
+            }
+
             
             if (session.lives <= 0) {
                 p.closeInventory();

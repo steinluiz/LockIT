@@ -77,6 +77,12 @@ public class MessageManager {
         return ChatColor.translateAlternateColorCodes('&', title);
     }
 
+    /** A message as an item text line (lore, names), without the prefix. */
+    public Component format(String key, String placeholder, String replacement) {
+        String msg = getRaw(key);
+        return ItemConfigManager.colorize(msg == null ? "" : msg.replace(placeholder, replacement));
+    }
+
     /** Name shown on the pins in the lockpicking menu. */
     public Component getPinName() {
         String name = getRaw("lp_pin_name");

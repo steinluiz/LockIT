@@ -1,0 +1,29 @@
+# Traps go in the 4th slot of the lock menu (the lock goes in the 2nd).
+# A trap only works in a block that has a lock with a code.
+# It goes off on a robber each time they click a wrong pin while picking the lock.
+#
+# durability: How many times the trap can go off before it breaks. 0 = never breaks.
+#             Traps that already exist keep their remaining uses (up to the new value).
+# kick:       true = the robber is thrown out of the lockpicking menu when it goes off.
+
+ink_trap:
+  durability: 3
+  kick: true
+  # Seconds of blindness for the robber.
+  blindness-seconds: 5
+  # Seconds the robber glows (visible through walls).
+  glowing-seconds: 10
+
+sound_trap:
+  durability: 5
+  kick: true
+  # Players within this many blocks are told a sound trap went off. 0 = nobody.
+  alert-radius: 32
+
+spike_trap:
+  durability: 10
+  kick: false
+  # Damage per hit (2.0 = one heart).
+  damage: 4.0
+
+# by Stein

@@ -1,6 +1,7 @@
 package com.stein.lockit.commands;
 
 import com.stein.lockit.LockIT;
+import com.stein.lockit.data.TrapType;
 import com.stein.lockit.utils.ItemUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -43,6 +44,10 @@ public class LockCommand implements CommandExecutor, TabCompleter {
                 if (args.length > 1) p.getInventory().addItem(ItemUtils.getKey(args[1]));
                 else plugin.getMsg().send(p, "cmd_usage_key"); break;
             case "lockpick": p.getInventory().addItem(ItemUtils.getLockpick()); break;
+            case "trap":
+                TrapType type = args.length > 1 ? TrapType.fromId(args[1] + "_trap") : null;
+                if (type != null) p.getInventory().addItem(ItemUtils.getTrap(type));
+                else plugin.getMsg().send(p, "cmd_usage_trap"); break;
             case "reload":
                 plugin.reloadConfigs();
                 plugin.getMsg().send(p, "reload_success");
@@ -72,10 +77,16 @@ public class LockCommand implements CommandExecutor, TabCompleter {
             list.add("customkey");
             list.add("lock");
             list.add("lockpick");
+            list.add("trap");
             list.add("reload");
         }
         else if (args.length == 2 && args[0].equalsIgnoreCase("lock")) {
             for(int i=1; i<=6; i++) list.add(String.valueOf(i));
+        }
+        else if (args.length == 2 && args[0].equalsIgnoreCase("trap")) {
+            list.add("ink");
+            list.add("sound");
+            list.add("spike");
         }
         return list;
     }

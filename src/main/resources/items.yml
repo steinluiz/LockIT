@@ -49,4 +49,20 @@ lock_6:
   name: "&5&l&k||&r &5&lUnpickable Lock &k||"
   custom_model_data: 105
 
+# Traps (put in the 4th slot of the lock menu). Settings are in traps.yml.
+ink_trap:
+  material: FLINT
+  name: "&8Ink Trap"
+  custom_model_data: 110
+
+sound_trap:
+  material: FLINT
+  name: "&eSound Trap"
+  custom_model_data: 111
+
+spike_trap:
+  material: FLINT
+  name: "&cSpike Trap"
+  custom_model_data: 112
+
 # by Stein

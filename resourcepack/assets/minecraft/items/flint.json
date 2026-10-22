@@ -45,6 +45,27 @@
           "type": "minecraft:model",
           "model": "lockit:item/lock_6"
         }
+      },
+      {
+        "threshold": 110,
+        "model": {
+          "type": "minecraft:model",
+          "model": "lockit:item/ink_trap"
+        }
+      },
+      {
+        "threshold": 111,
+        "model": {
+          "type": "minecraft:model",
+          "model": "lockit:item/sound_trap"
+        }
+      },
+      {
+        "threshold": 112,
+        "model": {
+          "type": "minecraft:model",
+          "model": "lockit:item/spike_trap"
+        }
       }
     ],
     "fallback": {

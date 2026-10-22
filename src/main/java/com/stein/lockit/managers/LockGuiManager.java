@@ -18,8 +18,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 
 public class LockGuiManager {
-    /** Middle slot of the 5-slot hopper inventory. All other slots stay empty. */
-    public static final int LOCK_SLOT = 2;
+    /** Slots of the 5-slot hopper inventory. All other slots stay empty. */
+    public static final int LOCK_SLOT = 1;
+    public static final int TRAP_SLOT = 3;
 
     private final LockIT plugin;
 
@@ -33,13 +34,21 @@ public class LockGuiManager {
                 plugin.getResourcePackManager().lockGuiTitle(p, plugin.getMsg().getGuiTitle()));
         holder.setInventory(inv);
 
-        // If the block already has a lock, show it in the lock slot so it can be taken out (removed).
+        // If the block already has a lock (and trap), show them in their slots so they can be taken out (removed).
         LockInfo info = plugin.getLockManager().getLock(blockLoc);
         if (info != null && info.lockItem != null) {
             inv.setItem(LOCK_SLOT, info.lockItem.clone());
+            if (info.trapItem != null) inv.setItem(TRAP_SLOT, info.trapItem.clone());
         }
 
         p.openInventory(inv);
+    }
+
+    /** Whether the item may go in the given GUI slot. */
+    private boolean fits(int slot, ItemStack item) {
+        if (slot == LOCK_SLOT) return ItemUtils.isLock(item);
+        if (slot == TRAP_SLOT) return ItemUtils.isTrap(item);
+        return false;
     }
 
     public void handleClick(InventoryClickEvent e) {
@@ -53,7 +62,7 @@ public class LockGuiManager {
         }
 
         if (inTop) {
-            if (raw != LOCK_SLOT) {
+            if (raw != LOCK_SLOT && raw != TRAP_SLOT) {
                 e.setCancelled(true);
                 return;
             }
@@ -63,22 +72,22 @@ public class LockGuiManager {
                 return;
             }
             ItemStack cursor = e.getCursor();
-            if (cursor != null && !cursor.getType().isAir() && !ItemUtils.isLock(cursor)) {
+            if (cursor != null && !cursor.getType().isAir() && !fits(raw, cursor)) {
                 e.setCancelled(true);
             }
             return;
         }
 
-        // Click inside the player's inventory: allow shift-click of a lock into the lock slot only.
+        // Click inside the player's inventory: allow shift-click of a lock/trap into its slot only.
         if (e.isShiftClick()) {
             e.setCancelled(true);
             ItemStack clicked = e.getCurrentItem();
-            if (ItemUtils.isLock(clicked)) {
-                ItemStack existing = top.getItem(LOCK_SLOT);
-                if (existing == null || existing.getType().isAir()) {
-                    top.setItem(LOCK_SLOT, clicked.clone());
-                    e.setCurrentItem(null);
-                }
+            int slot = ItemUtils.isLock(clicked) ? LOCK_SLOT : ItemUtils.isTrap(clicked) ? TRAP_SLOT : -1;
+            if (slot == -1) return;
+            ItemStack existing = top.getItem(slot);
+            if (existing == null || existing.getType().isAir()) {
+                top.setItem(slot, clicked.clone());
+                e.setCurrentItem(null);
             }
         }
     }
@@ -87,8 +96,8 @@ public class LockGuiManager {
         int topSize = e.getView().getTopInventory().getSize();
         for (int raw : e.getRawSlots()) {
             if (raw >= topSize) continue;
-            // Only a lock may go in the lock slot; every other GUI slot stays empty.
-            if (raw != LOCK_SLOT || !ItemUtils.isLock(e.getOldCursor())) {
+            // Only a lock may go in the lock slot and a trap in the trap slot; every other GUI slot stays empty.
+            if (!fits(raw, e.getOldCursor())) {
                 e.setCancelled(true);
                 return;
             }
@@ -101,44 +110,54 @@ public class LockGuiManager {
         if (!(top.getHolder() instanceof LockGuiHolder)) return;
 
         Location loc = ((LockGuiHolder) top.getHolder()).getLocation();
-        ItemStack inSlot = top.getItem(LOCK_SLOT);
-        top.setItem(LOCK_SLOT, null);
+        ItemStack lock = top.getItem(LOCK_SLOT);
+        ItemStack trap = top.getItem(TRAP_SLOT);
+        top.clear();
+        if (lock != null && lock.getType().isAir()) lock = null;
+        if (trap != null && trap.getType().isAir()) trap = null;
 
+        // The items shown when opening were clones of the installed ones: whatever is in the
+        // slots now is what the block gets, and taking an item out removes it from the block.
         LockInfo info = plugin.getLockManager().getLock(loc);
+        boolean hadTrap = info != null && info.trapItem != null;
 
-        // Manage mode: the block already has a lock (it was shown in the lock slot).
-        if (info != null) {
-            if (inSlot == null || inSlot.getType().isAir()) {
-                // Player took the lock out → remove it from the block. They keep the item they dragged out.
+        String code = ItemUtils.isLock(lock) ? ItemUtils.getNBT(lock, ItemUtils.KEY_ID_TAG) : null;
+        if (code == null || code.equals("blank")) {
+            if (info != null) {
                 plugin.getLockManager().setLock(loc, null);
                 plugin.getMsg().send(p, "lock_removed");
                 p.playSound(loc, Sound.ENTITY_ITEM_BREAK, 1, 1);
+            } else if (lock != null && ItemUtils.isLock(lock)) {
+                plugin.getMsg().send(p, "lock_needs_key");
+            } else if (trap != null) {
+                plugin.getMsg().send(p, "trap_needs_lock");
             }
-            // Lock left in the slot → block stays locked; the shown item was a clone, discard it.
+            // No valid lock: nothing stays in the block, give everything back.
+            if (lock != null) returnToPlayer(p, lock);
+            if (trap != null) returnToPlayer(p, trap);
             return;
         }
 
-        if (inSlot == null || inSlot.getType().isAir()) return;
-
-        if (ItemUtils.isLock(inSlot)) {
-            String keyId = ItemUtils.getNBT(inSlot, ItemUtils.KEY_ID_TAG);
-            if (keyId != null && !keyId.equals("blank")) {
-                plugin.getLockManager().setLock(loc, inSlot.asOne());
-                plugin.getMsg().send(p, "lock_installed");
-                p.playSound(loc, Sound.BLOCK_ANVIL_USE, 1, 1);
-
-                if (inSlot.getAmount() > 1) {
-                    ItemStack rest = inSlot.clone();
-                    rest.setAmount(inSlot.getAmount() - 1);
-                    returnToPlayer(p, rest);
-                }
-                return;
-            }
-            plugin.getMsg().send(p, "lock_needs_key");
+        ItemStack newTrap = trap == null ? null : trap.asOne();
+        boolean sameLock = info != null && lock.isSimilar(info.lockItem);
+        boolean sameTrap = hadTrap ? info.trapItem.isSimilar(newTrap) : newTrap == null;
+        if (!sameLock || !sameTrap) {
+            plugin.getLockManager().setLock(loc, lock.asOne(), newTrap);
         }
 
-        // Nothing installed: give the item back.
-        returnToPlayer(p, inSlot);
+        if (info == null || !sameLock) {
+            plugin.getMsg().send(p, "lock_installed");
+            p.playSound(loc, Sound.BLOCK_ANVIL_USE, 1, 1);
+        }
+        if (newTrap != null && !sameTrap) {
+            plugin.getMsg().send(p, "trap_installed");
+            p.playSound(loc, Sound.BLOCK_TRIPWIRE_ATTACH, 1, 1);
+        } else if (newTrap == null && hadTrap) {
+            plugin.getMsg().send(p, "trap_removed");
+        }
+
+        if (lock.getAmount() > 1) returnToPlayer(p, lock.asQuantity(lock.getAmount() - 1));
+        if (trap != null && trap.getAmount() > 1) returnToPlayer(p, trap.asQuantity(trap.getAmount() - 1));
     }
 
     private void returnToPlayer(Player p, ItemStack item) {

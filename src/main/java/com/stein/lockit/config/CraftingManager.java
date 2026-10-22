@@ -1,6 +1,7 @@
 package com.stein.lockit.config;
 
 import com.stein.lockit.LockIT;
+import com.stein.lockit.data.TrapType;
 import com.stein.lockit.utils.ItemUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -38,7 +39,8 @@ public class CraftingManager {
     private void registerRecipes() {
         if (config == null) return;
 
-        String[] keys = {"key", "universal_key", "lockpick", "lock_1", "lock_2", "lock_3", "lock_4", "lock_5", "lock_6"};
+        String[] keys = {"key", "universal_key", "lockpick", "lock_1", "lock_2", "lock_3", "lock_4", "lock_5", "lock_6",
+                "ink_trap", "sound_trap", "spike_trap"};
 
         for (String key : keys) {
             if (!config.contains(key + ".enabled") || !config.getBoolean(key + ".enabled")) continue;
@@ -54,6 +56,9 @@ public class CraftingManager {
                 case "lock_4": resultItem = ItemUtils.getLock(4); break;
                 case "lock_5": resultItem = ItemUtils.getLock(5); break;
                 case "lock_6": resultItem = ItemUtils.getLock(6); break;
+                case "ink_trap": resultItem = ItemUtils.getTrap(TrapType.INK); break;
+                case "sound_trap": resultItem = ItemUtils.getTrap(TrapType.SOUND); break;
+                case "spike_trap": resultItem = ItemUtils.getTrap(TrapType.SPIKE); break;
             }
 
             if (resultItem != null) {

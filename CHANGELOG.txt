@@ -1,24 +1,26 @@
-## 🔑 Master Keys
+## 🪤 Traps
 
 ### ✨ Changes & Improvements
-- **Master keys** — Combine keys in an **anvil** to make one key that opens several locks. Put a key in the **first slot** and the key to merge in the **second slot**: the result is the first key holding the codes of **both**. The second key is consumed. Repeat to add as many codes as you like.
-- **Master key look** — Merged keys are named **Master Key** and use their own `custom_model_data` (`102` by default), so resource packs can give them a unique texture. Both are set in the new `master_key` section of `items.yml`.
-- **Rename while merging** — Type a name in the anvil (e.g. "Master Key") and it is applied to the result.
-- **All codes shown** — Every code a key holds is listed on its own line in the key's tooltip.
-- **Copy master keys** — Transferring a master key onto a blank key duplicates all of its codes.
-- **New lock menu** — The lock menu is now a **hopper** menu. The lock goes in the **middle slot**; the other slots stay empty and can't hold items.
-- **Resource pack** — New textures for locks, keys, lockpicks and both menus, for Minecraft **1.21 to 26.3**. The pack is sent automatically when players join. Configure it in the new `resource-pack` section of `config.yml` (`enabled`, `url`, `sha1`, `id`, `prompt`, `required`); set `enabled: false` to play without textures. Players who don't load the pack still get the plain menus.
-- **Named pins** — The pins in the lockpicking menu are now called **Pin** (change it with `lp_pin_name` in `messages.yml`).
-- **New `master-key` section in `config.yml`:**
-  - `enabled` — Turn anvil merging on or off (default `true`).
-  - `xp-cost` — XP levels charged per merge (default `5`, minimum `1`). Costs above 40 are allowed.
-  - `max-codes` — Maximum codes a single key can hold (`0` = no limit).
+- **Traps** — Protect a lock with a trap. Open the lock menu and put a trap in the **fourth slot**. The trap goes off on a robber each time they click a **wrong pin** while picking the lock.
+- **Three traps:**
+  - **Ink Trap** — Blinds the robber, makes them glow and throws them out of the lockpicking menu.
+  - **Sound Trap** — Sounds a loud alarm and tells nearby players where it went off. Throws the robber out of the lockpicking menu.
+  - **Spike Trap** — Damages the robber. They can keep picking.
+- **A trap needs a lock** — A trap only stays in a block that has a lock with a code. Otherwise it is given back when you close the menu.
+- **Removing a lock gives the trap back** — Take the lock out and close the menu: the trap comes back to you too.
+- **Trap durability** — Each trap can go off a limited number of times, shown as **Uses left** in its tooltip. It breaks when none are left.
+- **New lock menu layout** — The lock now goes in the **second slot** and the trap in the **fourth**. The menu has a new texture.
+- **New `traps.yml`** — For each trap:
+  - `durability` — How many times it can go off (`0` = never breaks). Defaults: Ink `3`, Sound `5`, Spike `10`.
+  - `kick` — Throw the robber out of the lockpicking menu when it goes off. Default `true` for Ink and Sound, `false` for Spike.
+  - Ink `blindness-seconds` and `glowing-seconds`, Sound `alert-radius`, Spike `damage`.
+- **Crafting** — Recipes for all three traps in `craftings.yml`, and their names and `custom_model_data` (`110`, `111`, `112`) in `items.yml`.
+- **New command** — `/lockit trap <ink|sound|spike>`.
+- **Resource pack** — Textures for the three traps and the new lock menu, and a 3D key model when holding a key. If your `config.yml` still uses the pack from an older LockIT version, it is switched to the new one automatically.
 
 ### 🛠️ Fixes & Tweaks
-- A master key can't program a lock (a lock holds a single code); trying it now shows a clear message. Use a single-code key instead.
-- The anvil only accepts **one** key in the first slot, so stacked keys are never lost.
-- Merging two keys that add no new code shows no result, so no XP is wasted.
-- Item names from `items.yml` no longer show raw color codes (e.g. `&fKey` / `fKey` when renaming in an anvil). Items made by older versions keep their old name until re-crafted.
-- Existing keys and locks keep working, so nothing needs migrating.
+- Swapping the lock in the lock menu for a different lock now installs the new one. Before, the new lock was lost and the old one was duplicated.
+- New options added by an update now work right away. Before, some only applied after a second restart (new items showed up as stone named "Item Error").
+- Locks, keys and lockpicks from older versions keep working, so nothing needs migrating.
 
 Thanks for using LockIT! — Stein

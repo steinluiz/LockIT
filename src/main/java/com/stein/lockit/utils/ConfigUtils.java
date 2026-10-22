@@ -26,7 +26,13 @@ public final class ConfigUtils {
         YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(
                 new InputStreamReader(defStream, StandardCharsets.UTF_8));
         config.setDefaults(defConfig);
-        config.options().copyDefaults(true);
+        // Copy missing keys into the loaded config itself: lookups with an explicit fallback
+        // (getString(path, def)) ignore the defaults, so new options would only apply after a restart.
+        for (String key : defConfig.getKeys(true)) {
+            if (!defConfig.isConfigurationSection(key) && !config.isSet(key)) {
+                config.set(key, defConfig.get(key));
+            }
+        }
         try {
             config.save(file);
         } catch (IOException e) {

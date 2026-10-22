@@ -39,6 +39,24 @@
         "custom_model_data": 105
       },
       "model": "lockit:item/lock_6"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 110
+      },
+      "model": "lockit:item/ink_trap"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 111
+      },
+      "model": "lockit:item/sound_trap"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 112
+      },
+      "model": "lockit:item/spike_trap"
     }
   ]
 }

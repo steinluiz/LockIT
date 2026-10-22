@@ -39,8 +39,9 @@ public class LockManager {
                 for (String key : section.getKeys(false)) {
                     ItemStack item = dataConfig.getItemStack("locks." + key + ".item");
                     boolean locked = dataConfig.getBoolean("locks." + key + ".locked");
+                    ItemStack trap = dataConfig.getItemStack("locks." + key + ".trap");
                     Location loc = stringToLoc(key);
-                    if (loc != null) locks.put(loc, new LockInfo(item, locked));
+                    if (loc != null) locks.put(loc, new LockInfo(item, locked, trap));
                 }
             }
         }
@@ -51,6 +52,7 @@ public class LockManager {
             String key = locToString(entry.getKey());
             dataConfig.set("locks." + key + ".item", entry.getValue().lockItem);
             dataConfig.set("locks." + key + ".locked", entry.getValue().isLocked);
+            dataConfig.set("locks." + key + ".trap", entry.getValue().trapItem);
         }
         try {
             dataConfig.save(dataFile);
@@ -69,6 +71,21 @@ public class LockManager {
             locks.put(loc, new LockInfo(item, true));
         }
         saveAll();
+    }
+
+    /** Installs or replaces the lock and trap, keeping the locked state of an existing lock. */
+    public void setLock(Location loc, ItemStack item, ItemStack trap) {
+        LockInfo old = locks.get(loc);
+        locks.put(loc, new LockInfo(item, old == null || old.isLocked, trap));
+        saveAll();
+    }
+
+    public void setTrap(Location loc, ItemStack trap) {
+        LockInfo info = locks.get(loc);
+        if (info != null) {
+            info.trapItem = trap;
+            saveAll();
+        }
     }
 
     public void setLockState(Location loc, boolean locked) {

@@ -1,12 +1,12 @@
 name: LockIT
-version: 1.6
+version: 1.7
 main: com.stein.lockit.LockIT
 api-version: 1.21
 author: Stein
 commands:
   lockit:
     description: Main command for LockIT
-    usage: /lockit <universalkey|key|customkey <id>|lock <1-6>|lockpick|reload>
+    usage: /lockit <universalkey|key|customkey <id>|lock <1-6>|lockpick|trap <ink|sound|spike>|reload>
 permissions:
   lockit.admin:
     description: Allows you to use the /lockit command

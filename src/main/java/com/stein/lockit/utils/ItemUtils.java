@@ -1,6 +1,7 @@
 package com.stein.lockit.utils;
 
 import com.stein.lockit.LockIT;
+import com.stein.lockit.data.TrapType;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
@@ -17,6 +18,8 @@ public class ItemUtils {
     public static final String KEY_ID_TAG = "keyid";
     public static final String LOCK_LEVEL_TAG = "lock_level";
     public static final String DURABILITY_TAG = "lockpick_durability";
+    public static final String TRAP_TYPE_TAG = "trap_type";
+    public static final String TRAP_USES_TAG = "trap_uses";
     // A key can hold several codes (master key); they are stored comma-separated in KEY_ID_TAG.
     public static final String CODE_SEPARATOR = ",";
 
@@ -131,6 +134,46 @@ public class ItemUtils {
         List<Component> lore = new ArrayList<>();
         for (String code : codes) lore.add(Component.text(code).color(NamedTextColor.GRAY));
         meta.lore(lore);
+        item.setItemMeta(meta);
+    }
+
+    public static ItemStack getTrap(TrapType type) {
+        ItemStack item = LockIT.getInstance().getItemConfig().getItemFromConfig(type.getId());
+        ItemMeta meta = item.getItemMeta();
+        meta.getPersistentDataContainer().set(getNsKey(TRAP_TYPE_TAG), PersistentDataType.STRING, type.getId());
+        item.setItemMeta(meta);
+        setTrapUses(item, LockIT.getInstance().getTrapConfig().getDurability(type));
+        return item;
+    }
+
+    public static TrapType getTrapType(ItemStack item) {
+        return TrapType.fromId(getNBT(item, TRAP_TYPE_TAG));
+    }
+
+    public static boolean isTrap(ItemStack item) {
+        return getTrapType(item) != null;
+    }
+
+    /** Uses left on a trap, capped at the configured durability. 0 = never breaks. */
+    public static int getTrapUses(ItemStack item) {
+        TrapType type = getTrapType(item);
+        if (type == null) return 0;
+        int max = LockIT.getInstance().getTrapConfig().getDurability(type);
+        if (max == 0) return 0;
+        Integer v = item.getItemMeta().getPersistentDataContainer().get(getNsKey(TRAP_USES_TAG), PersistentDataType.INTEGER);
+        return v == null || v <= 0 ? max : Math.min(v, max);
+    }
+
+    /** Stores the uses left and shows them in the lore (no lore for traps that never break). */
+    public static void setTrapUses(ItemStack item, int uses) {
+        ItemMeta meta = item.getItemMeta();
+        if (uses > 0) {
+            meta.getPersistentDataContainer().set(getNsKey(TRAP_USES_TAG), PersistentDataType.INTEGER, uses);
+            meta.lore(List.of(LockIT.getInstance().getMsg().format("trap_lore_uses", "%uses%", String.valueOf(uses))));
+        } else {
+            meta.getPersistentDataContainer().remove(getNsKey(TRAP_USES_TAG));
+            meta.lore(null);
+        }
         item.setItemMeta(meta);
     }
 }
